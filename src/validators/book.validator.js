@@ -30,4 +30,27 @@ const bookSchema = Joi.object({
   }),
 });
 
-module.exports = { bookSchema };
+const updateBookSchema = Joi.object({
+  title: Joi.string()
+    .min(2)
+    .max(100)
+    .pattern(/^[\w\s\-',.!?‘’"():&]+$/u)
+    .messages({
+      "string.min": "Title should have at least 2 characters",
+      "string.pattern.base": "Title contains invalid characters",
+    }),
+  author: Joi.string()
+    .min(2)
+    .max(50)
+    .pattern(/[A-Za-z]/)
+    .messages({
+      "string.min": "Author should have at least 2 characters",
+      "string.pattern.base": "Author must contain at least one letter",
+    }),
+  publishedDate: Joi.date().iso().messages({
+    "date.base": "Published date must be a valid date",
+    "date.format": "Published date must be in ISO format (YYYY-MM-DD)",
+  }),
+});
+
+module.exports = { bookSchema, updateBookSchema };
