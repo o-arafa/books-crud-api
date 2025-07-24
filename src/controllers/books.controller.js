@@ -7,9 +7,48 @@ const {
 
 const getAllBooks = async (req, res) => {
   try {
-    const books = await Book.find();
-    res.status(200).json(books);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    // Build filter object
+    const filter = {};
+    if (req.query.author) {
+      filter.author = { $regex: req.query.author, $options: 'i' };
+    }
+    if (req.query.title) {
+      filter.title = { $regex: req.query.title, $options: 'i' };
+    }
+    if (req.query.genre) {
+      filter.genre = { $regex: req.query.genre, $options: 'i' };
+    }
+    
+    // Sorting
+    const sortBy = req.query.sortBy || 'createdAt';
+    const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+    const sort = { [sortBy]: sortOrder };
+    
+    const books = await Book.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .lean(); // Better performance
+    
+    const total = await Book.countDocuments(filter);
+    const totalPages = Math.ceil(total / limit);
+    
+    res.status(200).json({
+      books,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalBooks: total,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    });
   } catch (err) {
+    console.error('Get all books error:', err);
     res.status(500).json({ message: "Server Error", error: err.message });
   }
 };
