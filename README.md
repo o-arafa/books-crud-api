@@ -1,6 +1,6 @@
 📚 Book Management API
 This project is built as a solution for the first task from this repository:
-software-engineering-tasks-for-beginners / backend-tasks
+[engineering-tasks-for-beginners / backend-tasks](https://github.com/mostafaaElsherbiny/software-engineering-tasks-for-beginners/tree/main/backend-tasks)
 
 📌 Project Description
 A simple RESTful API for managing books using Node.js, Express, and MongoDB.
